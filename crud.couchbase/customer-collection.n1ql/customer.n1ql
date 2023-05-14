@@ -1,0 +1,2 @@
+CREATE COLLECTION bucket1._default.customers;
+CREATE PRIMARY INDEX idx_bucket1_default_customers ON bucket1._default.customers;
