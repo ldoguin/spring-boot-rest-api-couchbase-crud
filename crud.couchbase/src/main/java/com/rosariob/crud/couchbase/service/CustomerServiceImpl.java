@@ -1,15 +1,16 @@
 package com.rosariob.crud.couchbase.service;
 
 import com.rosariob.crud.couchbase.entity.Customer;
-import com.rosariob.crud.couchbase.repository.CustomerRepository;
+import com.rosariob.crud.couchbase.repository.CustomerRepositoryImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
 public class CustomerServiceImpl implements CustomerService{
     @Autowired
-    private CustomerRepository repository;
+    private CustomerRepositoryImpl repository;
 
     @Override
     public Customer findById(String id) {

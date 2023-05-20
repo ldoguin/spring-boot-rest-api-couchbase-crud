@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Configuration;
 public class ApplicationProperties {
     private String bucket;
     private String collection;
-    private String scopeName;
+    private String scope;
 
     public String getBucket() {
         return bucket;
@@ -26,11 +26,11 @@ public class ApplicationProperties {
         this.collection = collection;
     }
 
-    public String getScopeName() {
-        return scopeName;
+    public String getScope() {
+        return scope;
     }
 
-    public void setScopeName(String scopeName) {
-        this.scopeName = scopeName;
+    public void setScope(String scope) {
+        this.scope = scope;
     }
 }

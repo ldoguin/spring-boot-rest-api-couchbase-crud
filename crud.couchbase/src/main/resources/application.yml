@@ -1,0 +1,14 @@
+spring:
+  couchbase:
+    connectionString: couchbase://localhost
+    username: Administrator
+    password: password
+
+application:
+  bucket: bucket1
+  scope: _default
+  collection: customers
+
+logging:
+  level:
+    org.springframework.data.convert.CustomConversions: ERROR
