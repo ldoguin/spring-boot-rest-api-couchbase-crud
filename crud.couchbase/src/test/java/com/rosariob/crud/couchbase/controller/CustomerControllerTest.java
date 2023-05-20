@@ -3,7 +3,7 @@ package com.rosariob.crud.couchbase.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rosariob.crud.couchbase.entity.Customer;
 import com.rosariob.crud.couchbase.rest.CustomerController;
-import com.rosariob.crud.couchbase.service.CustomerServiceImpl;
+import com.rosariob.crud.couchbase.service.CustomerService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class CustomerControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private CustomerServiceImpl customerService;
+    private CustomerService customerService;
 
     private static final String URL_API = "/api/customers";
 

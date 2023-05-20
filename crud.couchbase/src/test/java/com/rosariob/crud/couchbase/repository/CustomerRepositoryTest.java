@@ -2,13 +2,12 @@ package com.rosariob.crud.couchbase.repository;
 
 import com.couchbase.client.java.Bucket;
 import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.ClusterOptions;
 import com.couchbase.client.java.Collection;
 import com.couchbase.client.java.Scope;
-import com.couchbase.client.java.env.ClusterEnvironment;
 import com.couchbase.client.java.kv.ExistsResult;
 import com.couchbase.client.java.transactions.Transactions;
 import com.rosariob.crud.couchbase.entity.Customer;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,15 +15,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.couchbase.BucketDefinition;
+import org.testcontainers.couchbase.CouchbaseContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.utility.DockerImageName;
 
 import java.time.Duration;
 import java.util.List;
 
 @SpringBootTest(properties = { "application.bucket=customers", "application.collection=_default", "application.scope=_default" })
-//@Testcontainers
+@Testcontainers
 public class CustomerRepositoryTest {
     @Autowired
-    private CustomerRepositoryImpl customerRepository;
+    private CustomerRepository customerRepository;
 
     @Autowired
     private CouchbaseTemplate couchbaseTemplate;
@@ -32,61 +38,38 @@ public class CustomerRepositoryTest {
     private static final String BUCKET_NAME = "customers";
     private static final String SCOPE_NAME = "_default";
     private static final String COLLECTION_NAME = "_default";
-    private static ClusterEnvironment env;
     private static Cluster cluster;
     private static Bucket bucket;
     private static Scope scope;
     private static Collection collection;
     private static String keySpace;
 
-    /*@Container
-    private static final CouchbaseContainer container = new CouchbaseContainer(COUCHBASE_IMAGE_ENTERPRISE)
+    private static final DockerImageName COUCHBASE_IMAGE_ENTERPRISE = DockerImageName
+            .parse("couchbase:enterprise-7.1.4")
+            .asCompatibleSubstituteFor("couchbase/server");
+    @Container
+    private static CouchbaseContainer container = new CouchbaseContainer(COUCHBASE_IMAGE_ENTERPRISE)
             .withCredentials("Administrator", "password")
-            .withServiceQuota(CouchbaseService.SEARCH, 1024)
-            .withBucket(new BucketDefinition(BUCKET_NAME).withPrimaryIndex(true)*//*.withFlushEnabled(true).withReplicas(1)*//*)
-            .withExposedPorts(8091, 8092, 8093, 8094, 11210)
-            .withStartupTimeout(Duration.ofMinutes(15));*/
+            //.withServiceQuota(CouchbaseService.SEARCH, 512)
+            .withBucket(new BucketDefinition(BUCKET_NAME).withPrimaryIndex(true)/*.withFlushEnabled(true).withReplicas(1)*/)
+            .withStartupTimeout(Duration.ofMinutes(2));
+
+    @DynamicPropertySource
+    static void registerCouchbaseProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.couchbase.connectionString", container::getConnectionString);
+        registry.add("spring.couchbase.username", container::getUsername);
+        registry.add("spring.couchbase.password", container::getPassword);
+    }
 
     @BeforeAll
     public static void setUp() {
-
-        /*container.start();
-
-        Set<SeedNode> seedNodes = Set.of(
-                SeedNode.create("127.0.0.1")
-                        .withKvPort(container.getMappedPort(11210))
-                        .withManagerPort(container.getMappedPort(8091))
-        );*/
-
-        /*TransactionKeyspace keyspace = TransactionKeyspace.create(BUCKET_NAME, SCOPE_NAME, COLLECTION_NAME);
-        env = ClusterEnvironment.builder().transactionsConfig(TransactionsConfig
-                .durabilityLevel(DurabilityLevel.PERSIST_TO_MAJORITY)
-                .metadataCollection(keyspace))
-                .build();*/
-
-        /*cluster = Cluster.connect(seedNodes,
-                ClusterOptions.clusterOptions(container.getUsername(), container.getPassword()).environment(env));*/
-
-        /*cluster = Cluster.connect(container.getConnectionString(),
-                ClusterOptions.clusterOptions(container.getUsername(), container.getPassword()).environment(env));*/
-
-        cluster = Cluster.connect("couchbase://localhost", "Administrator", "password");
-
-
+        cluster = Cluster.connect(container.getConnectionString(),
+                ClusterOptions.clusterOptions(container.getUsername(), container.getPassword()));
         cluster.waitUntilReady(Duration.ofMinutes(2));
-
-
         bucket = cluster.bucket(BUCKET_NAME);
         scope = bucket.scope(SCOPE_NAME);
         keySpace = String.join(".", BUCKET_NAME, SCOPE_NAME, COLLECTION_NAME);
         collection = scope.collection(COLLECTION_NAME);
-    }
-
-    @AfterAll
-    public static void tearDown(){
-        cluster.close();
-        /*env.shutdown();
-        container.stop();*/
     }
 
     @BeforeEach
@@ -96,7 +79,6 @@ public class CustomerRepositoryTest {
                 scope.query("DELETE FROM " + keySpace)
         );
     }
-
     @Test
     public void testFindById() {
             Customer alex = new Customer("customer1", "Alex", "Stone");
@@ -168,7 +150,6 @@ public class CustomerRepositoryTest {
                 customerList.forEach(customer -> collection.insert(customer.getId(), customer))
         );
         transactions.run(ctx -> customerRepository.deleteAll());
-
         ExistsResult exists = collection.exists(alex.getId());
         Assertions.assertFalse(exists.exists());
         ExistsResult exists2 = collection.exists(jack.getId());
