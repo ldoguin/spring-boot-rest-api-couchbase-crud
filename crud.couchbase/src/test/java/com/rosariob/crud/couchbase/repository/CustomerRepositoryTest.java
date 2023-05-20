@@ -50,8 +50,7 @@ public class CustomerRepositoryTest {
     @Container
     private static CouchbaseContainer container = new CouchbaseContainer(COUCHBASE_IMAGE_ENTERPRISE)
             .withCredentials("Administrator", "password")
-            //.withServiceQuota(CouchbaseService.SEARCH, 512)
-            .withBucket(new BucketDefinition(BUCKET_NAME).withPrimaryIndex(true)/*.withFlushEnabled(true).withReplicas(1)*/)
+            .withBucket(new BucketDefinition(BUCKET_NAME).withPrimaryIndex(true))
             .withStartupTimeout(Duration.ofMinutes(2));
 
     @DynamicPropertySource
