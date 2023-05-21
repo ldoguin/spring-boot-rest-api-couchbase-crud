@@ -5,4 +5,13 @@ Branch:
 
 -**basic_crud**: implements basic REST APIs with CRUD for Couchbase
 
-Security needs to be implemented and transactions must be added to the service layer.
+Features developed:
+- repository, service and controller layers with unit tests.
+- transaction management for methods create, update, delete and deleteById
+
+
+Features to be implemented
+- Security (authorization and RBAC)
+
+If you have any suggestions or thoughts feel free to contact me.
+
