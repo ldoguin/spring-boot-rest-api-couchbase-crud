@@ -3,7 +3,7 @@ Spring Boot REST APIs with CRUD for Couchbase.
 
 Branch:
 
--**basic_crud**: implements basic REST APIs with CRUD for Couchbase
+-**basic_crud**: contains basic REST APIs with CRUD for Couchbase
 
 Features developed:
 - repository, service and controller layers with unit tests.
