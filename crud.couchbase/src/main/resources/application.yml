@@ -11,4 +11,4 @@ application:
 
 logging:
   level:
-    org.springframework.data.convert.CustomConversions: ERROR
+    org.springframework.data.convert.CustomConversions: DEBUG
