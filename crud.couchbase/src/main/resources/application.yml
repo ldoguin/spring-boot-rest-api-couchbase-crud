@@ -3,6 +3,8 @@ spring:
     connectionString: couchbase://localhost
     username: Administrator
     password: password
+  main:
+    allow-bean-definition-overriding: true
 
 application:
   bucket: bucket1

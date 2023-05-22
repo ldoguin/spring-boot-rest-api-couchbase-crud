@@ -5,10 +5,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.couchbase.config.AbstractCouchbaseConfiguration;
 import org.springframework.data.couchbase.repository.config.EnableCouchbaseRepositories;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+
 
 @Configuration
 @EnableConfigurationProperties(CouchbaseProperties.class)
 @EnableCouchbaseRepositories(basePackages = "com/rosariob/crud/couchbase.repository")
+@EnableTransactionManagement
 public class DatabaseConfiguration extends AbstractCouchbaseConfiguration {
 
     private final CouchbaseProperties couchbaseProperties;
